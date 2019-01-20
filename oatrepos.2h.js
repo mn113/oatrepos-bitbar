@@ -34,8 +34,8 @@ function output(displayRepos) {
 			let lineColour = areDiff ? 'darkred' : 'green';
 			let versions = `${repo.master} / ${repo.develop}`;
             console.log(`${repo.name} (${versions})|${link} color=${lineColour}`);
-			console.log("--master:", repo.master);
-			console.log("--develop:", repo.develop);
+			console.log(`--master: ${repo.master}|${link}/tree/master`);
+			console.log(`--develop: ${repo.develop}|${link}/tree/develop`);
 			console.log("---");
 		});
 	// Menubar afters:
