@@ -1,10 +1,9 @@
 /* eslint-env: node, es6 */
 
-require('dotenv').config();
 const github = require('octonode');
-var config = require('./config.json');
-var token = require('./token.json').gh_token;
-var client = github.client(process.env.GH_TOKEN || token);
+const config = require('./config.json');
+const token = require('./token.json').gh_token;
+var client = github.client(token);
 
 /**
  * Extract file contents from a given repo, branch & file
@@ -72,22 +71,14 @@ function flatten(json) {
     }));
 }
 
+//console.log(flatten(config.enabled));
+
 /** 
  * Start fetching repos data!
  */
 module.exports.fetchAll = function fetchAll() {
     return Promise.all(
-        config.enabled
-        .map(flatten)        
+        flatten(config.enabled)
         .map(fetch)
     );
 };
-
-/**
- * Allow configuration of the client with Personal Access Token from outside
- * @param {String} token
- */
-module.exports.configure = function configure(token) {
-    client = github.client(token);
-    return this;
-}

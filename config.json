@@ -1,18 +1,20 @@
 {
-    "enabled": [{
-        "org": "oat-sa",
-        "repos": [
-            "tao-core",
-            "generis",
-            "extension-tao-community"
-        ]
-    },
-    {
-        "org": "oat-sa",
-        "repos": [
-            "extension-tao-invalsi"
-        ]
-    }],
+    "enabled": [
+        {
+            "org": "oat-sa",
+            "repos": [
+                "tao-core",
+                "generis",
+                "extension-tao-community"
+            ]
+        },
+        {
+            "org": "oat-sa",
+            "repos": [
+                "extension-tao-invalsi"
+            ]
+        }
+    ],
     "disabled": [
         "extension-tao-dac-simple",
         "extension-tao-funcacl",
@@ -33,6 +35,7 @@
         "extension-tao-proctoring",
         "extension-tao-delivery",
         "extension-tao-delivery-rdf",
-        "extension-tao-devtools"
+        "extension-tao-devtools",
+        "depp-teacher-portal"
     ]
 }
