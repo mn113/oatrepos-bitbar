@@ -5,7 +5,27 @@
             "repos": [
                 "tao-core",
                 "generis",
-                "extension-tao-community"
+                "extension-tao-community",
+                "extension-tao-dac-simple",
+                "extension-tao-funcacl",
+                "extension-tao-testtaker",
+                "extension-tao-group",
+                "extension-tao-item",
+                "extension-tao-itemqti",
+                "extension-tao-itemqti-pci",
+                "extension-tao-itemqti-pic",
+                "extension-tao-test",
+                "extension-tao-testqti",
+                "extension-tao-testqti-previewer",
+                "extension-tao-lti",
+                "extension-tao-ltideliveryprovider",
+                "extension-tao-outcome",
+                "extension-tao-outcomeui",
+                "extension-tao-outcomelti",
+                "extension-tao-proctoring",
+                "extension-tao-delivery",
+                "extension-tao-delivery-rdf",
+                "extension-tao-devtools"
             ]
         },
         {
@@ -16,26 +36,6 @@
         }
     ],
     "disabled": [
-        "extension-tao-dac-simple",
-        "extension-tao-funcacl",
-        "extension-tao-testtaker",
-        "extension-tao-group",
-        "extension-tao-item",
-        "extension-tao-itemqti",
-        "extension-tao-itemqti-pci",
-        "extension-tao-itemqti-pic",
-        "extension-tao-test",
-        "extension-tao-testqti",
-        "extension-tao-testqti-previewer",
-        "extension-tao-lti",
-        "extension-tao-ltideliveryprovider",
-        "extension-tao-outcome",
-        "extension-tao-outcomeui",
-        "extension-tao-outcomelti",
-        "extension-tao-proctoring",
-        "extension-tao-delivery",
-        "extension-tao-delivery-rdf",
-        "extension-tao-devtools",
         "depp-teacher-portal"
     ]
 }
