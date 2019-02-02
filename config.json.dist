@@ -3,15 +3,6 @@
         {
             "org": "oat-sa",
             "repos": [
-                "extension-tao-foobar",
-                "extension-tao-devtools"
-            ]
-        }
-    ],
-    "disabled": [
-        {
-            "org": "oat-sa",
-            "repos": [
                 "tao-core",
                 "generis",
                 "extension-tao-community",
@@ -35,6 +26,20 @@
                 "extension-tao-delivery",
                 "extension-tao-delivery-rdf",
                 "extension-tao-devtools",
+                "extension-tao-foobar"
+            ]
+        },
+        {
+            "org": "mn113",
+            "repos": [
+                "oatrepos-bitbar"
+            ]
+        }
+    ],
+    "disabled": [
+        {
+            "org": "oat-sa",
+            "repos": [
                 "depp-teacher-portal"
             ]
         }

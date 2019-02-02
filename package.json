@@ -1,24 +1,24 @@
 {
-  "name": "node-tao-gh",
+  "name": "oatrepos-bitbar",
   "version": "0.0.1",
   "description": "Bitbar plugin to display versions of OAT repos",
-  "main": "index.js",
+  "main": "oatrepos.2h.js",
   "scripts": {
     "start": "node oatrepos.2h.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mn113/node-tao-gh.git"
+    "url": "git+https://github.com/mn113/oatrepos-bitbar.git"
   },
   "author": "M. Nicholson",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mn113/node-tao-gh/issues"
+    "url": "https://github.com/mn113/oatrepos-bitbar/issues"
   },
-  "homepage": "https://github.com/mn113/node-tao-gh#readme",
+  "homepage": "https://github.com/mn113/oatrepos-bitbar#readme",
   "dependencies": {
-    "dotenv": "^6.2.0",
+    "date-fns": "^1.30.1",
     "octonode": "^0.9.5"
   }
 }
