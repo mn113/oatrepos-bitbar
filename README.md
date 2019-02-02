@@ -1,6 +1,8 @@
 # The OAT Repos BitBar Plugin
 
-Puts your OAT repo stats in your Mac menu bar.
+Puts OAT repo stats & links in your Mac menu bar.
+
+Configure an unlimited number of Github orgs & repos to display. See at a glance which repos need releasing and what versions they are at. Designed for repos with a `manifest.php` versioning system.
 
 ## Prerequisites
 
@@ -8,9 +10,10 @@ This will run on systems with Mac OSX, [BitBar](), [Node.js]() >= 7.6 & [npm]() 
 
 ## Install
 
-(1) Clone the repo to your hard disk
-(2) npm install it
-(3) Symlink the entry point into your BitBar plugins folder.
+The basic idea is to
+* (1) Clone the repo to your hard disk
+* (2) `npm install` it
+* (3) Symlink the entry point into your BitBar plugins folder.
 
 ```
 cd /path/to/your/bitbar/plugins/folder
@@ -21,17 +24,23 @@ ln -s oatrepos.2h.js ../oatrepos.2h.js
 chmod +x ../oatrepos.2h.js
 ```
 
-Please configure the access token before using.
+Please also configure the access token before using.
 
 ## Configure
+
+### Access Token
 
 From your Github account, generate a new [Personal Access Token](https://github.com/settings/tokens) with 'repo' permissions.
 
 Duplicate the file `token.json.dist` as `token.json` and paste your token into this new file.
 
+### Orgs & repos
+
 Configure the list of orgs and repos you want to see in `config.json`. Please note, this plugin is specifically designed to look for a `manifest.php` in the root of each repo. If there isn't one, the repo will be skipped. If you add a repo which doesn't have `master`/`develop` branches, limited info may be shown.
 
-## Usage
+### Refresh frequency
+
+As with all BitBar plugins, the refresh time is encoded into the filename. The default `oatrepos.2h.js` will scrape Github every 2 hours. Change `2h` to something like `15m`, `30m`, `1h` if you want more frequent updates.
 
 ## Limitations
 
