@@ -8,6 +8,8 @@ const config = require('./config.json');
 const token = require('./token.json').gh_token;
 var client = github.client(token);
 
+const silently = (err) => null;
+
 /**
  * Extract file contents from a given repo, branch & file
  *
@@ -17,24 +19,41 @@ var client = github.client(token);
  * @returns {String} file content
  */
 async function getFileContents(ghrepo, branch = 'master', filename = 'manifest.php') {
-    var results = await ghrepo.contentsAsync(filename, branch);
-    return Buffer.from(results[0].content, 'base64').toString();
+    var results = await ghrepo.contentsAsync(filename, branch).catch(silently);
+    if (results) return Buffer.from(results[0].content, 'base64').toString();
+    else return null;
 }
 
 /**
  * Extract manifest version matching 'version' => '1.2.3'
  *
- * @param {String} manifest file contents
+ * @param {String} contents file contents
+ * @param {String} filename
  * @returns {String} version
  */
-function extractVersion(manifest) {
-    var results = manifest.match(/'version'\s*=>\s*'([\d\.]+)'/);
+function extractVersion(filename, contents) {
+    if (!contents) return null;
+    var results = (filename === 'manifest.php') ? contents.match(/'version'\s*=>\s*'([\d\.]+)'/)
+    : (filename === 'package.json') ? contents.match(/"version"\s*:\s*"([\d\.]+)"/)
+    : [];
     return (results && results.length > 1) ? results[1] : 'unknown';
 }
 
+/**
+ * Extract version from a given repo & branch.
+ * Looks in a variety of standard package files until it finds a match
+ *
+ * @param {Object} ghrepo
+ * @param {String} branch
+ * @returns {String} version (if found)
+ */
 async function getVersion(ghrepo, branch = 'master') {
-    var toTry = ['manifest.php', 'package.json'];
-    var version = await getFileContents(gherpo, branch, toTry[0]).then(extractVersion);
+    var version = await getFileContents(ghrepo, branch, 'manifest.php')
+        .then(extractVersion.bind(null, 'manifest.php'))
+        .catch(silently);
+    if (!version) version = await getFileContents(ghrepo, branch, 'package.json')
+        .then(extractVersion.bind(null, 'package.json'))
+        .catch(silently);
     return version;
 }
 
@@ -47,16 +66,14 @@ async function getVersion(ghrepo, branch = 'master') {
  */
 async function getLastCommitOnBranch(ghrepo, branch = 'master') {
     var branch = await ghrepo.branchAsync(branch);
-    //console.log('<b>', branch[0].commit, '</b>');
     if (branch[0] && branch[0].commit) {
-        //console.log('<c>', commit, '</c>');
         return {
             author: branch[0].commit.author.login,
             date: timeAgo(parseDate(branch[0].commit.commit.author.date)),
             sha: branch[0].commit.sha.slice(0,7)
         };
     }
-    return null;
+    else return null;
 }
 
 /**
@@ -93,8 +110,7 @@ async function getComparison(ghrepo, branch1 = 'master', branch2 = 'develop') {
     : (comp.ahead_by) ? `${comp.ahead_by} commits ahead of`
     : (comp.behind_by) ? `${comp.behind} commits behind`
     : `??? to`;
-    // console.log(status);
-    return `${branch1} is ${status} ${branch2}`
+    return `${branch2} is ${status} ${branch1}`
 }
 
 
@@ -110,10 +126,10 @@ function fetch(repoNameFull) {
         if (!ghrepo) return {};
 
         // if master exists:
-        var masterVersion = getFileContents(ghrepo, 'master').then(extractVersion);
+        var masterVersion = getVersion(ghrepo, 'master');
         var masterLast = getLastCommitOnBranch(ghrepo, 'master');
         // if develop exists:
-        var developVersion = getFileContents(ghrepo, 'develop').then(extractVersion);
+        var developVersion = getVersion(ghrepo, 'develop');
         var developLast = getLastCommitOnBranch(ghrepo, 'develop');
         // extra:
         var recentPRs = getRecentPRCount(ghrepo);
@@ -141,7 +157,7 @@ function fetch(repoNameFull) {
             })
             .then(resolve)
             .catch(err => {
-                console.error(err);
+                console.log("Error fetching ", repoNameFull);
                 reject(err);
             });
     });

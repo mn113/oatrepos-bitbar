@@ -10,7 +10,10 @@
  * <bitbar.dependencies>node,octonode,dotenv</bitbar.dependencies>
  */
 
-const repoScraper = require('./repoScraper');
+
+const mn113gh = 'https://github.com/mn113/oatrepos-bitbar';
+const path = require('path');
+const fs = require('fs');
 
 const GITICON = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwElEQVQ4T32TTUtbQRSG33PmqgUt2l2k+yC4MOIHQiK9iaG0oKUi3Qr+ii7Tpf/BH9C6VcFqrIqIwRRq0OrGlYuiFHVrk9w5p9xrEmMyOqvhzPs+54shPHHGfD9WCfg7i7UWXe+PDzb/uqTkCg76fo8X8E8CBsJ3a+0ZUVfaBWkDhJmr1kxAMQvofD3BU5BHgFrZOwQbJ/ACiCtQvLaii8zwXJAG4MF8XzZBVo/2dz+E96Fkep2I3rnaiQCt5jCmiishTg70v7o4v7xZArDgaodc5rpQgW8kUGXdUuERwxpT2GnAdNbboUQy8wuEYeeKSJdF2FO1H7u1/LJQKNwNpTKfCVis6X9TIpXeAch/DkCkc2ATL+3lzxOpTA7Al0hvcUgj2Wyv/VfdBMx4G0TwFQwPwCcRXDPLCaBvAMNQHFWlIxsN0Q2RP+JhoiPwOFA5JEKskaBmPi1s3DbWGEIq5SBvlMcioWCtdLA9E14Tk5kNKN5G8Sbz/bqbTjNEBAEbypGIsao5Zjat5jZAlM33+yQweYaOPp4JlarWmwrLbo47P1M7hEqdFWSLxR83rYN2AuqVUIAVS/BelM2Myxzq/gMuDfaGij7JUwAAAABJRU5ErkJggg==";
 
@@ -18,18 +21,50 @@ const OATICON = "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAMJWlDQ1BJQ0MgUHJ
 
 const pjson = require('./package.json');
 
+// Begin plugin output:
 // Set icon:
 console.log(':o:');
 //console.log("| dropdown=false templateImage='"+OATICON+"'");
 console.log("---");
 
-Promise.all([
-	repoScraper.fetchAll(),
-	repoScraper.getApiLeft()
-])
-.then(output).catch(err => {});
+// Preflight:
+// Check if config.json already present, if not, duplicate config.json.dist:
+function preflight() {
+	return new Promise((resolve,reject) => {
+		try {
+			var configJsonPath = path.join(__dirname, 'config.json');
+			fs.access(configJsonPath, fs.constants.F_OK, (err1) => {
+				if (err1) {
+					fs.access(configJsonPath + '.dist', fs.constants.F_OK, (err2) => {
+						if (!err2) {
+							fs.copyFile(configJsonPath + '.dist', configJsonPath, () => {
+								resolve("Copied config.json.dist -> config.json");
+							});
+						}
+						else throw new Error("Please obtain config.json or config.json.dist from " + mn113gh);
+					});
+				}
+				else resolve('ok');
+			});
+		} catch(err) {
+			reject(err.message);
+		}
+	});
+}
 
-// Output:
+// Main:
+preflight().then(ok => {
+//	if (ok.length) console.log(ok);
+	const repoScraper = require('./repoScraper');
+	return Promise.all([
+		repoScraper.fetchAll(),
+		repoScraper.getApiLeft()
+	])
+	.then(output).catch(err => {});
+})
+.catch(console.error);
+
+// Principal output:
 function output([displayRepos, apiLeft]) {
 	console.log(`OAT repos (${displayRepos.length}):`);
 	console.log("---");
@@ -37,7 +72,7 @@ function output([displayRepos, apiLeft]) {
 		.forEach(function(repo) {
 			let baselink = `href=https://github.com/${repo.name}`;
 			let areDiff = repo.master.version !== repo.develop.version;
-			let lineColour = areDiff ? 'darkred' : 'green';
+			let lineColour = areDiff ? 'crimson' : 'green';
 			let versions = `${repo.master.version} / ${repo.develop.version}`;
             console.log(`${repo.name} (${versions})|${baselink} color=${lineColour}`);
 			console.log(`--${repo.status}|${baselink} color=${lineColour}`);
@@ -50,10 +85,11 @@ function output([displayRepos, apiLeft]) {
 		});
 	// Menubar afters:
 	console.log("Options");
+	console.log("--Reload plugin | refresh=true terminal=false");
+	console.log("--Generate a Github Personal Access Token|https://github.com/settings/tokens");
 	console.log("--Set your Github Personal Access Token in token.json");
 	console.log("--Set your Github org & repo names in config.json");
 	console.log(`--${apiLeft} API requests left this hour`);
-	console.log("--Reload plugin | refresh=true terminal=false");
 	console.log("--Plugin v"+pjson.version);
 	console.log("--Node "+process.version);
 }
