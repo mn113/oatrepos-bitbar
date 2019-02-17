@@ -93,8 +93,8 @@ function output([displayRepos, apiLeft]) {
 	console.log("--Reload plugin | refresh=true terminal=false");
 	console.log("--Instructions");
 	console.log("----1. Generate a Github Personal Access Token|href=https://github.com/settings/tokens");
-	console.log("----2. Set your Github Personal Access Token in token.json|color=black");
-	console.log("----3. Set your Github org & repo names in config.json|color=black");
+	console.log("----2. Set your Github Personal Access Token in token.json");
+	console.log("----3. Set your Github org & repo names in config.json");
 	console.log(`--${apiLeft} API requests left this hour`);
 	console.log("--Plugin v"+pjson.version);
 	console.log("--Node "+process.version);
