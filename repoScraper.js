@@ -80,18 +80,15 @@ async function getLastCommitOnBranch(ghrepo, branch = 'master') {
  * Reports the number of open PRs in a repo that were updated recently
  *
  * @param {Object} ghrepo
- * @param {String} branch
  * @param {Number} days - how old a PR to consider
  * @returns {Promise<Number>} - resolves with the number of open PRs touched in last N days
  */
-async function getRecentPRCount(ghrepo, branch = 'master', days = 70) {
+async function getRecentPRCount(ghrepo, thresholdDays = 7) {
     var prs = await ghrepo.prsAsync();
     return prs[0].filter(pr => {
         // restrict by state & date:
         var diff = Math.abs(daysDiff(Date.now(), parseDate(pr.updated_at)));
-        // console.log(pr.state);
-        // console.log(diff);
-        return pr.state === 'open';// && diff < days;
+        return pr.state === 'open' && diff < thresholdDays;
     }).length;
 }
 
@@ -104,11 +101,11 @@ async function getRecentPRCount(ghrepo, branch = 'master', days = 70) {
  * @returns {Promise<String>} - resolves with status description
  */
 async function getComparison(ghrepo, branch1 = 'master', branch2 = 'develop') {
-    var comp = await ghrepo.compareAsync(branch1, branch2);
-    comp = comp[0];
-    var status = (comp.status === 'identical') ? `equal with`
-    : (comp.ahead_by) ? `${comp.ahead_by} commits ahead of`
-    : (comp.behind_by) ? `${comp.behind} commits behind`
+    var comparison = await ghrepo.compareAsync(branch1, branch2);
+    comparison = comparison[0];
+    var status = (comparison.status === 'identical') ? `equal with`
+    : (comparison.ahead_by) ? `${comparison.ahead_by} commits ahead of`
+    : (comparison.behind_by) ? `${comparison.behind} commits behind`
     : `??? to`;
     return `${branch2} is ${status} ${branch1}`
 }
@@ -117,7 +114,7 @@ async function getComparison(ghrepo, branch1 = 'master', branch2 = 'develop') {
 /**
  * Fetch details about a repo on Github
  *
- * @param {String} repoName
+ * @param {String} repoNameFull - e.g. mn113/oatrepos-bitbar
  * @returns {Promise} object containing repo details
  */
 function fetch(repoNameFull) {
@@ -157,8 +154,8 @@ function fetch(repoNameFull) {
             })
             .then(resolve)
             .catch(err => {
-                console.log("Error fetching ", repoNameFull);
-                reject(err);
+                // console.log("Error fetching ", repoNameFull);
+                resolve(new Error("Error fetching " + repoNameFull));
             });
     });
 }
@@ -185,6 +182,9 @@ module.exports.fetchAll = function fetchAll() {
     );
 };
 
+/**
+ * Fetch how many API requests remain
+ */
 module.exports.getApiLeft = async function getApiLeft() {
     var limit = await client.limitAsync();
     return limit[0];

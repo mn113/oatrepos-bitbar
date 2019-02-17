@@ -53,42 +53,48 @@ function preflight() {
 }
 
 // Main:
-preflight().then(ok => {
-//	if (ok.length) console.log(ok);
+preflight().then(() => {
 	const repoScraper = require('./repoScraper');
 	return Promise.all([
 		repoScraper.fetchAll(),
 		repoScraper.getApiLeft()
 	])
-	.then(output).catch(err => {});
+	.then(output)
+	.catch(err => {});
 })
 .catch(console.error);
 
 // Principal output:
 function output([displayRepos, apiLeft]) {
-	console.log(`OAT repos (${displayRepos.length}):`);
+	console.log(`${displayRepos.length} repos defined:`);
 	console.log("---");
 	displayRepos
 		.forEach(function(repo) {
-			let baselink = `href=https://github.com/${repo.name}`;
-			let areDiff = repo.master.version !== repo.develop.version;
-			let lineColour = areDiff ? 'crimson' : 'green';
-			let versions = `${repo.master.version} / ${repo.develop.version}`;
-            console.log(`${repo.name} (${versions})|${baselink} color=${lineColour}`);
-			console.log(`--${repo.status}|${baselink} color=${lineColour}`);
-			console.log(`--master @ ${repo.master.version}:|${baselink}/tree/master`);
-			console.log(`--↳ Last commit ${repo.master.lastDate} ago by ${repo.master.lastAuthor}`);
-			console.log(`--develop @ ${repo.develop.version}:|${baselink}/tree/develop`);
-			console.log(`--↳ Last commit ${repo.develop.lastDate} ago by ${repo.develop.lastAuthor}`);
-			console.log(`--${repo.prs} open PRs edited in past week|${baselink}/pulls`);
+			if (repo instanceof Error) {
+				console.log(repo.message);
+			}
+			else {
+				let baselink = `href=https://github.com/${repo.name}`;
+				let areDiff = repo.master.version !== repo.develop.version;
+				let lineColour = areDiff ? 'crimson' : 'green';
+				let versions = `${repo.master.version} / ${repo.develop.version}`;
+				console.log(`${repo.name} (${versions})|${baselink} color=${lineColour}`);
+				console.log(`--${repo.status}|${baselink} color=${lineColour}`);
+				console.log(`--master @ ${repo.master.version}:|${baselink}/tree/master`);
+				console.log(`--↳ Last commit ${repo.master.lastDate} ago by ${repo.master.lastAuthor}`);
+				console.log(`--develop @ ${repo.develop.version}:|${baselink}/tree/develop`);
+				console.log(`--↳ Last commit ${repo.develop.lastDate} ago by ${repo.develop.lastAuthor}`);
+				console.log(`--${repo.recentPRs} open PRs edited in past week|${baselink}/pulls`);
+			}
 			console.log("---");
 		});
 	// Menubar afters:
-	console.log("Options");
+	console.log("Extra");
 	console.log("--Reload plugin | refresh=true terminal=false");
-	console.log("--Generate a Github Personal Access Token|https://github.com/settings/tokens");
-	console.log("--Set your Github Personal Access Token in token.json");
-	console.log("--Set your Github org & repo names in config.json");
+	console.log("--Instructions");
+	console.log("----1. Generate a Github Personal Access Token|href=https://github.com/settings/tokens");
+	console.log("----2. Set your Github Personal Access Token in token.json|color=black");
+	console.log("----3. Set your Github org & repo names in config.json|color=black");
 	console.log(`--${apiLeft} API requests left this hour`);
 	console.log("--Plugin v"+pjson.version);
 	console.log("--Node "+process.version);
